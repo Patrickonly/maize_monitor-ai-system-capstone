@@ -223,8 +223,9 @@ const Landing = () => {
 
               {/* Download Button */}
               <a
-                href="/smart-maize.apk"
-                download="SmartMaize.apk"
+                href="https://drive.google.com/file/d/1ApFr_KQ93vq69x-g0uGJS3-HOsmlzpHo/view?usp=drive_link"
+                target="_blank"
+                rel="noopener noreferrer"
                 id="android-download-btn"
                 className="mt-7 inline-flex items-center gap-3 rounded-2xl bg-primary px-7 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:scale-105 hover:shadow-primary/50 hover:opacity-95 active:scale-100"
               >
