@@ -1,6 +1,6 @@
 import type { NextApiResponse } from 'next';
-import { pool } from '../../../database/connection';
-import { AuthenticatedRequest, withAuth } from '../../../middleware/auth';
+import { pool } from '../../../../database/connection';
+import { AuthenticatedRequest, withAuth } from '../../../../middleware/auth';
 
 /**
  * GET /api/plants/[plantId]/progression

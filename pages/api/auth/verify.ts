@@ -9,6 +9,7 @@ interface SuccessResponse {
     id: number;
     email: string;
     name: string;
+    role?: string;
   };
   message: string;
 }
