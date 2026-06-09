@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Next.js build output
+.next
+
+# XAMPP / internal tool caches
+.sixth
+
+# Environment secrets — never commit these
+.env.local
+.env*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

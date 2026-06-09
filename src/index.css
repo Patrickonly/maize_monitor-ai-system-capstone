@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -89,9 +89,16 @@
   * {
     @apply border-border;
   }
+  html, body, #root {
+    min-height: 100%;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    background-image:
+      radial-gradient(circle at 20% -5%, hsl(142 71% 45% / 0.12), transparent 35%),
+      radial-gradient(circle at 100% 0%, hsl(142 71% 45% / 0.08), transparent 30%);
+    background-attachment: fixed;
   }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', 'Inter', sans-serif;
@@ -100,10 +107,24 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-sm;
+    @apply border border-border/50 bg-card/80 shadow-sm backdrop-blur-xl;
   }
   .glow-green {
     box-shadow: 0 0 30px hsl(142 71% 45% / 0.15);
+  }
+  .fade-up {
+    animation: fade-up 0.4s ease-out;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

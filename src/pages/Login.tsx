@@ -1,25 +1,52 @@
+import { useAuth } from "@/contexts/AuthContext";
+import { useChat } from "@/contexts/ChatContext";
+import { useToast } from "@/hooks/use-toast";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Leaf, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { setIsGuest } = useChat();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please enter email and password",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await login(email, password);
+      setIsGuest(false);
+      toast({
+        title: "Success",
+        description: "Login successful! Welcome back.",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "Login failed. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm">
+      <div className="glass-card w-full max-w-sm rounded-3xl p-6">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
-            <Leaf className="w-7 h-7 text-primary-foreground" />
-          </div>
+          <img src="/maize-logo.svg" alt="Smart Maize Health Monitor logo" className="mx-auto mb-4 h-12 w-12 rounded-2xl border border-primary/25 bg-primary/10 p-1" />
           <h1 className="font-display text-2xl font-bold">Welcome back</h1>
           <p className="text-sm text-muted-foreground mt-1">Sign in to Smart Maize Health Monitor</p>
         </div>
@@ -61,8 +88,7 @@ const Login = () => {
         </form>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-primary font-medium hover:underline">Sign up</Link>
+          Don't have an account? Use the Create Account option from the home page.
         </p>
         <p className="text-center mt-3">
           <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">← Back to home</Link>

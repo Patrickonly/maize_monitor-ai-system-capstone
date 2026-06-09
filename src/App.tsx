@@ -1,42 +1,68 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { RouteSkeleton } from "@/components/RouteSkeleton";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthModalProvider, AuthModals } from "@/contexts/AuthModalContext";
 import { ChatProvider } from "@/contexts/ChatContext";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode, useEffect, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import CreateAnalysing from "./pages/CreateAnalysing";
 import Dashboard from "./pages/Dashboard";
-import RecentChats from "./pages/RecentChats";
-import Reports from "./pages/Reports";
-import SettingsPage from "./pages/SettingsPage";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import RecentChats from "./pages/RecentChats";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
+
+const RouteLoader = ({ children }: { children: ReactNode }) => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 450);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
+
+  if (loading) return <RouteSkeleton />;
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <ChatProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/recent" element={<RecentChats />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ChatProvider>
+      <AuthProvider>
+        <ChatProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
+              <AuthModalProvider>
+                <AuthModals />
+                <Routes>
+                  <Route path="/" element={<RouteLoader><Landing /></RouteLoader>} />
+                  <Route path="/create-analysing" element={<CreateAnalysing />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/recent" element={<RecentChats />} />
+                  <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="*" element={<RouteLoader><NotFound /></RouteLoader>} />
+                </Routes>
+              </AuthModalProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ChatProvider>
+      </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

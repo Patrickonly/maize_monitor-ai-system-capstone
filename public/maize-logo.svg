@@ -1,0 +1,50 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="84" y1="44" x2="428" y2="468" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="1" stop-color="#15803D"/>
+    </linearGradient>
+    <linearGradient id="corn" x1="244" y1="132" x2="267" y2="382" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FACC15"/>
+      <stop offset="1" stop-color="#EAB308"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="157" y1="269" x2="351" y2="382" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#86EFAC"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="32" y="32" width="448" height="448" rx="120" fill="url(#bg)"/>
+
+  <ellipse cx="256" cy="256" rx="148" ry="170" fill="#14532D" fill-opacity="0.25"/>
+
+  <path d="M256 116C296 116 324 163 324 226V311C324 365 294 404 256 404C218 404 188 365 188 311V226C188 163 216 116 256 116Z" fill="url(#corn)"/>
+
+  <g fill="#FEF08A" opacity="0.92">
+    <circle cx="231" cy="181" r="10"/>
+    <circle cx="257" cy="172" r="10"/>
+    <circle cx="282" cy="181" r="10"/>
+    <circle cx="224" cy="208" r="10"/>
+    <circle cx="249" cy="201" r="10"/>
+    <circle cx="274" cy="208" r="10"/>
+    <circle cx="289" cy="228" r="10"/>
+    <circle cx="236" cy="228" r="10"/>
+    <circle cx="256" cy="229" r="10"/>
+    <circle cx="224" cy="251" r="10"/>
+    <circle cx="248" cy="251" r="10"/>
+    <circle cx="272" cy="251" r="10"/>
+    <circle cx="289" cy="272" r="10"/>
+    <circle cx="236" cy="272" r="10"/>
+    <circle cx="256" cy="272" r="10"/>
+    <circle cx="224" cy="296" r="10"/>
+    <circle cx="248" cy="296" r="10"/>
+    <circle cx="272" cy="296" r="10"/>
+    <circle cx="238" cy="319" r="10"/>
+    <circle cx="262" cy="319" r="10"/>
+  </g>
+
+  <path d="M171 364C186 295 226 256 256 248C222 287 210 341 205 396C193 389 181 378 171 364Z" fill="url(#leaf)"/>
+  <path d="M341 364C326 295 286 256 256 248C290 287 302 341 307 396C319 389 331 378 341 364Z" fill="url(#leaf)"/>
+
+  <path d="M256 96C266 83 284 70 301 64" stroke="#DCFCE7" stroke-width="14" stroke-linecap="round"/>
+</svg>

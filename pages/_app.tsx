@@ -1,0 +1,15 @@
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import '../src/index.css';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <>
+      <Head>
+        <link rel="icon" href="/maize-logo.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
+}
