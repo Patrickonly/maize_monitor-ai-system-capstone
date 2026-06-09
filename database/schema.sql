@@ -44,7 +44,7 @@ CREATE TABLE chat_conversation (
   chat_session_id INT NOT NULL,
   role ENUM('user', 'assistant') NOT NULL,
   content TEXT NOT NULL,
-  image_url VARCHAR(500),
+  image_url LONGTEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (chat_session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
 );
