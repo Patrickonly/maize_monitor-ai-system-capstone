@@ -27,10 +27,11 @@ if (fs.existsSync(envPath)) {
 }
 
 const DB = {
-  host    : process.env.DB_HOST     || 'localhost',
-  user    : process.env.DB_USER     || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME     || 'maize_detection_systemai',
+  host    : process.env.DB_HOST     || '173.212.204.250',
+  user    : process.env.DB_USER     || 'capstoneproject',
+  password: process.env.DB_PASSWORD || 'capstoneproject',
+  database: process.env.DB_NAME     || 'capstoneproject',
+  port    : process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

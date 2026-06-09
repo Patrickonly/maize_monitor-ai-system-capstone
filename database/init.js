@@ -18,20 +18,23 @@ async function initializeDatabase() {
     console.log('🚀 Starting database initialization...\n');
     
     // Log connection details
-    const dbHost = process.env.DB_HOST || 'localhost';
-    const dbUser = process.env.DB_USER || 'root';
-    const dbPassword = process.env.DB_PASSWORD || '(empty)';
+    const dbHost = process.env.DB_HOST || '173.212.204.250';
+    const dbUser = process.env.DB_USER || 'capstoneproject';
+    const dbPassword = process.env.DB_PASSWORD || 'capstoneproject';
+    const dbName = process.env.DB_NAME || 'capstoneproject';
+    const dbPort = process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306;
     
     console.log('📋 Connection Details:');
-    console.log(`   Host: ${dbHost}`);
+    console.log(`   Host: ${dbHost}:${dbPort}`);
     console.log(`   User: ${dbUser}`);
     console.log(`   Password: ${dbPassword === '' ? '(empty)' : '(set)'}\n`);
 
     // Create connection without database to create it
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
+      host: dbHost,
+      user: dbUser,
+      password: dbPassword,
+      port: dbPort,
       waitForConnections: true,
       connectionLimit: 1,
       queueLimit: 0,
