@@ -1,5 +1,5 @@
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').replace(/\/$/, '');
-const MAIZE_API_URL = (process.env.NEXT_PUBLIC_MAIZE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').replace(/\/api\/?$/, '').replace(/\/$/, '');
+const MAIZE_API_URL = (process.env.NEXT_PUBLIC_MAIZE_API_URL || 'http://localhost:5000').replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 const parseJsonResponse = async (response: Response) => {
   const contentType = response.headers.get('content-type') || '';
@@ -604,7 +604,7 @@ export interface MaizeChatResponse extends MaizeApiBaseResponse {
 
 export const maizeApiService = {
   async health(): Promise<MaizeHealthResponse> {
-    const response = await fetch(`${MAIZE_API_URL}/api/health`, {
+    const response = await fetch(`${API_URL}/api/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -620,7 +620,7 @@ export const maizeApiService = {
   },
 
   async modelInfo(): Promise<MaizeModelInfoResponse> {
-    const response = await fetch(`${MAIZE_API_URL}/api/model-info`, {
+    const response = await fetch(`${API_URL}/api/model-info`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -636,7 +636,7 @@ export const maizeApiService = {
   },
 
   async predict(input: { question?: string; message?: string; imageBase64?: string }): Promise<MaizePredictResponse> {
-    const response = await fetch(`${MAIZE_API_URL}/api/predict`, {
+    const response = await fetch(`${API_URL}/api/predict`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -666,7 +666,7 @@ export const maizeApiService = {
   },
 
   async chat(message: string): Promise<MaizeChatResponse> {
-    const response = await fetch(`${MAIZE_API_URL}/api/chat`, {
+    const response = await fetch(`${API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

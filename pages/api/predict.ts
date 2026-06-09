@@ -3,7 +3,7 @@ import { applyCors, handleOptions } from '../../utils/cors';
 
 const MAIZE_ML_URL = (
   process.env.MAIZE_API_URL || 'http://localhost:5000'
-).replace(/\/$/, '');
+).replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 export default async function handler(
   req: NextApiRequest,
