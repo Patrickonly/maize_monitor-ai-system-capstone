@@ -2,7 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { applyCors, handleOptions } from '../../utils/cors';
 
 const MAIZE_ML_URL = (
-  process.env.NEXT_PUBLIC_MAIZE_API_URL || process.env.MAIZE_API_URL || 'http://localhost:5000'
+  process.env.NEXT_PUBLIC_MAIZE_API_URL || 
+  process.env.MAIZE_API_URL || 
+  'https://patrickonly-maize-assitant-monitor-2v2e.onrender.com'
 ).replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 export default async function handler(
@@ -29,6 +31,7 @@ export default async function handler(
     const contentType = upstream.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
       const data = await upstream.json();
+
       return res.status(upstream.status).json(data);
     }
 
