@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { applyCors, handleOptions } from '../../utils/cors';
 
 const MAIZE_ML_URL = (
-  process.env.MAIZE_API_URL || 'http://localhost:5000'
+  process.env.NEXT_PUBLIC_MAIZE_API_URL || process.env.MAIZE_API_URL || 'http://localhost:5000'
 ).replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 export default async function handler(
@@ -45,7 +45,7 @@ export default async function handler(
         'ML diagnosis service is unavailable. Start the maize ML server on port 5000.',
       type: 'text',
       response:
-        'The AI diagnosis server is offline. Please start the ML service on port 5000 and try again.',
+        'Cannot reach the server. Please try again later.',
       source: 'fallback',
     });
   }

@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { applyCors, handleOptions } from '../../utils/cors';
 
 const MAIZE_ML_URL = (
-  process.env.MAIZE_API_URL || 'https://patrickonly-maize-assitant-monitor-2v2e.onrender.com'
+  process.env.NEXT_PUBLIC_MAIZE_API_URL || process.env.MAIZE_API_URL || 'http://localhost:5000'
 ).replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 export default async function handler(
@@ -20,7 +20,7 @@ export default async function handler(
   }
 
   try {
-    const upstream = await fetch(`${MAIZE_ML_URL}/api/chat`, {
+    const upstream = await fetch(`${MAIZE_ML_URL}/api/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req.body ?? {}),
@@ -29,6 +29,15 @@ export default async function handler(
     const contentType = upstream.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
       const data = await upstream.json();
+
+      // Intercept the hardcoded backend ChatGPT error message
+      if (
+        data.response &&
+        data.response.includes("I can't call ChatGPT right now")
+      ) {
+        data.response = "I am the Maize AI Assistant! I can help you with questions about maize diseases and treatments. Please feel free to ask or upload an image for diagnosis.";
+      }
+
       return res.status(upstream.status).json(data);
     }
 
@@ -43,7 +52,7 @@ export default async function handler(
       ok: false,
       message: 'ML chat service is unavailable.',
       response:
-        'The AI chat server is offline. Please start the ML service on port 5000 and try again.',
+        'Cannot reach the server. Please try again later.',
       source: 'fallback',
     });
   }

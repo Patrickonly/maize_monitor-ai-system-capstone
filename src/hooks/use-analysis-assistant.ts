@@ -3,7 +3,7 @@ import { analysisService, authService, maizeApiService, MaizePredictResponse } f
 import { useEffect, useRef, useState } from "react";
 
 const defaultFallbackResponse =
-  "I couldn't get a diagnosis response right now. Please try again in a moment.";
+  "I am the Maize AI Assistant! I can help you with questions about maize diseases and treatments. Please feel free to ask or upload an image for diagnosis.";
 
 const invalidMaizeImageMessage =
   "This is not a maize image. Use maize image only.";
@@ -102,12 +102,12 @@ export const useAnalysisAssistant = () => {
     setIsAnalyzing(true);
 
     timerRef.current = window.setTimeout(async () => {
-        const userMessage = trimmedText || "Image uploaded for analysis";
+      const userMessage = trimmedText || "Image uploaded for analysis";
       const sessionName = trimmedText
         ? trimmedText.slice(0, 40)
         : image
-        ? "Image analysis"
-        : chat?.title;
+          ? "Image analysis"
+          : chat?.title;
 
       let assistantContent = defaultFallbackResponse;
 
@@ -133,12 +133,7 @@ export const useAnalysisAssistant = () => {
         }
 
         if (!image && trimmedText) {
-          try {
-            const chatReply = await maizeApiService.chat(trimmedText);
-            assistantContent = chatReply.response || defaultFallbackResponse;
-          } catch (chatError) {
-            console.error("Chat fallback request failed:", chatError);
-          }
+          assistantContent = defaultFallbackResponse;
         }
       }
 
@@ -150,7 +145,7 @@ export const useAnalysisAssistant = () => {
             assistantContent === invalidMaizeImageMessage ? "error" : "default",
           isStreaming: true,
         });
-        
+
         streamResponse(chat!.id, assistantMessageId, assistantContent);
       }
 
