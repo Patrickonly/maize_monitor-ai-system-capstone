@@ -29,7 +29,7 @@ if (fs.existsSync(envPath)) {
 const DB = {
   host    : process.env.DB_HOST     || '173.212.204.250',
   user    : process.env.DB_USER     || 'capstoneproject',
-  password: process.env.DB_PASSWORD || 'capstoneproject',
+  password: process.env.DB_PASSWORD ?? 'capstoneproject',
   database: process.env.DB_NAME     || 'capstoneproject',
   port    : process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
 };

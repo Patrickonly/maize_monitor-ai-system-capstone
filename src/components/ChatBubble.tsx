@@ -1,5 +1,5 @@
 import { ChatMessage } from "@/contexts/ChatContext";
-import { cn } from "@/lib/utils";
+import { cn, resizeImage } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Copy, Edit2, Leaf, Share2, User, X } from "lucide-react";
 import { useState } from "react";
@@ -26,11 +26,17 @@ export const ChatBubble = ({ message, onEdit, onDelete, onRegenerate }: ChatBubb
   // editedImage: undefined = no change (keep original), string = new image dataURL, null = remove image
   const [editedImage, setEditedImage] = useState<string | null | undefined>(undefined);
 
-  const handleFile = (file: File | null) => {
+  const handleFile = async (file: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setEditedImage(reader.result as string);
-    reader.readAsDataURL(file);
+    try {
+      const resized = await resizeImage(file);
+      setEditedImage(resized);
+    } catch (err) {
+      console.error("Image resize failed", err);
+      const reader = new FileReader();
+      reader.onload = () => setEditedImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
   const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const items = e.clipboardData.items;

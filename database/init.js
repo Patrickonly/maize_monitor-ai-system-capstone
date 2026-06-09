@@ -20,7 +20,7 @@ async function initializeDatabase() {
     // Log connection details
     const dbHost = process.env.DB_HOST || '173.212.204.250';
     const dbUser = process.env.DB_USER || 'capstoneproject';
-    const dbPassword = process.env.DB_PASSWORD || 'capstoneproject';
+    const dbPassword = process.env.DB_PASSWORD ?? 'capstoneproject';
     const dbName = process.env.DB_NAME || 'capstoneproject';
     const dbPort = process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306;
     

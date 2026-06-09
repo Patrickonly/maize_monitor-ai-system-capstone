@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, resizeImage } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Send, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
@@ -24,13 +24,19 @@ export const SmartInput = ({
   const [image, setImage] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (loading) return;
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setImage(reader.result as string);
-    reader.readAsDataURL(file);
+    try {
+      const resized = await resizeImage(file);
+      setImage(resized);
+    } catch (err) {
+      console.error("Image resize failed", err);
+      const reader = new FileReader();
+      reader.onload = () => setImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
     e.target.value = "";
   };
 
