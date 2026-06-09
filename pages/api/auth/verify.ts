@@ -34,18 +34,18 @@ export default async function handler(
     const token = extractToken(req.headers.authorization);
 
     if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'No token provided' 
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
       });
     }
 
     const decoded = verifyToken(token);
 
     if (!decoded) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid or expired token' 
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired token'
       });
     }
 
@@ -60,9 +60,9 @@ export default async function handler(
       const user = (users as any[])[0];
 
       if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          message: 'User not found' 
+        return res.status(401).json({
+          success: false,
+          message: 'User not found'
         });
       }
 
@@ -81,9 +81,9 @@ export default async function handler(
     }
   } catch (error) {
     console.error('Verify error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 }
