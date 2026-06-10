@@ -123,6 +123,45 @@ export const useAnalysisAssistant = () => {
           assistantContent = invalidMaizeImageMessage;
         } else {
           assistantContent = formatPredictResponse(prediction);
+          
+          // Progression Tracking Logic
+          if (chat && chat.messages.length > 0 && image && !existingId) {
+            // Find the last assistant message BEFORE the current user submission
+            const prevAssistantMsgs = chat.messages.filter(m => m.role === "assistant");
+            const lastAssistantMsg = prevAssistantMsgs[prevAssistantMsgs.length - 1];
+            
+            if (lastAssistantMsg && lastAssistantMsg.content) {
+              const oldDiseaseMatch = lastAssistantMsg.content.match(/Disease:\s*([^\n]+)/i);
+              const newDiseaseMatch = assistantContent.match(/Disease:\s*([^\n]+)/i);
+              
+              if (oldDiseaseMatch && newDiseaseMatch) {
+                const oldDisease = oldDiseaseMatch[1].trim();
+                const newDisease = newDiseaseMatch[1].trim();
+                
+                const oldStageMatch = lastAssistantMsg.content.match(/Stage:\s*([^\n]+)/i);
+                const newStageMatch = assistantContent.match(/Stage:\s*([^\n]+)/i);
+                
+                const oldStage = oldStageMatch ? oldStageMatch[1].trim() : "Unknown";
+                const newStage = newStageMatch ? newStageMatch[1].trim() : "Unknown";
+                
+                let progressionText = "The crop health has changed.";
+                if (oldDisease.toLowerCase().includes("healthy") && !newDisease.toLowerCase().includes("healthy")) {
+                  progressionText = "The crop health has worsened. Disease detected.";
+                } else if (!oldDisease.toLowerCase().includes("healthy") && newDisease.toLowerCase().includes("healthy")) {
+                  progressionText = "The crop health has improved! It is now healthy.";
+                } else if (oldDisease === newDisease && oldStage === newStage) {
+                  progressionText = "The disease state remains unchanged.";
+                } else if (oldDisease === newDisease) {
+                  progressionText = `The disease is still present, stage changed from ${oldStage} to ${newStage}.`;
+                } else {
+                  progressionText = "A new disease or condition has been detected.";
+                }
+
+                const progressionAlert = `**📈 PROGRESSION ALERT: ${progressionText}**\nLast scan showed "${oldDisease}" (${oldStage}). Today's scan shows "${newDisease}" (${newStage}).\n---\n\n`;
+                assistantContent = progressionAlert + assistantContent;
+              }
+            }
+          }
         }
       } catch (predictError) {
         console.error("Prediction request failed:", predictError);

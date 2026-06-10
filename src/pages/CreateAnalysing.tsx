@@ -154,7 +154,7 @@ const CreateAnalysing = () => {
             loading={isAnalyzing}
             className="max-w-4xl mx-auto"
             inputVariant="chatgpt"
-            placeholder="Upload an image and describe the symptoms..."
+            placeholder={messages.length > 0 ? "Track Progression: Upload a new photo of this crop today..." : "Upload an image and describe the symptoms..."}
           />
         </div>
       </div>

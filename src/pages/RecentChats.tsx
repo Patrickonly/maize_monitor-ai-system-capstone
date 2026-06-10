@@ -78,6 +78,25 @@ const RecentChats = () => {
     return date.toLocaleString();
   };
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const { renameChat } = useChat();
+
+  const startEditing = (chat: Chat, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(chat.id);
+    setEditTitle(chat.title);
+  };
+
+  const saveEdit = (chatId: string, e: React.MouseEvent | React.FormEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (editTitle.trim()) {
+      renameChat(chatId, editTitle.trim());
+    }
+    setEditingId(null);
+  };
+
   const ChatList = ({ items, label }: { items: typeof chats; label: string }) =>
     items.length > 0 ? (
       <div className="mb-6">
@@ -86,82 +105,106 @@ const RecentChats = () => {
         </h3>
         <div className="space-y-2">
           {items.map((chat) => (
-            <button
-              key={chat.id}
-              onClick={() => openChat(chat)}
-              className="w-full glass-card rounded-xl p-4 text-left hover:shadow-md transition-shadow group"
-            >
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center flex-shrink-0">
-                  <MessageSquare className="w-5 h-5 text-accent-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-sm truncate">{chat.title}</h4>
-                    {chat.pinned && <Pin className="w-3 h-3 text-primary flex-shrink-0" />}
+            <div key={chat.id} className="relative">
+              <button
+                onClick={() => openChat(chat)}
+                className="w-full glass-card rounded-xl p-4 text-left hover:shadow-md transition-shadow group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center flex-shrink-0">
+                    <MessageSquare className="w-5 h-5 text-accent-foreground" />
                   </div>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">
-                    {(chat.lastMessage || chat.messages[chat.messages.length - 1]?.content)?.slice(0, 80) || "No messages"}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span
-                      className="text-[10px] text-muted-foreground flex items-center gap-1"
-                      title={chat.updatedAt.toLocaleString()}
-                    >
-                      <Clock className="w-3 h-3" /> {formatTime(chat.updatedAt)}
-                    </span>
-                    <span className="text-[10px] bg-accent text-accent-foreground px-2 py-0.5 rounded-full">
-                      {chat.messageCount ?? chat.messages.length} messages
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      {editingId === chat.id ? (
+                        <form onSubmit={(e) => saveEdit(chat.id, e)} className="flex-1 flex gap-2">
+                          <input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 bg-background border border-input rounded px-2 py-0.5 text-sm"
+                            autoFocus
+                            onBlur={(e) => saveEdit(chat.id, e as any)}
+                          />
+                        </form>
+                      ) : (
+                        <>
+                          <h4 className="font-medium text-sm truncate">{chat.title}</h4>
+                          {chat.pinned && <Pin className="w-3 h-3 text-primary flex-shrink-0" />}
+                          <button
+                            onClick={(e) => startEditing(chat, e)}
+                            className="hidden group-hover:block ml-1 text-muted-foreground hover:text-primary transition-colors"
+                            title="Rename Crop Profile"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {(chat.lastMessage || chat.messages[chat.messages.length - 1]?.content)?.slice(0, 80) || "No messages"}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span
+                        className="text-[10px] text-muted-foreground flex items-center gap-1"
+                        title={chat.updatedAt.toLocaleString()}
+                      >
+                        <Clock className="w-3 h-3" /> {formatTime(chat.updatedAt)}
+                      </span>
+                      <span className="text-[10px] bg-accent text-accent-foreground px-2 py-0.5 rounded-full">
+                        {chat.messageCount ?? chat.messages.length} messages
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="hidden group-hover:flex items-center gap-1">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleTogglePin(chat.id); }}
-                    className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground"
-                    title={chat.pinned ? "Unpin analysis" : "Pin analysis"}
-                    aria-label={chat.pinned ? "Unpin analysis" : "Pin analysis"}
-                  >
-                    <Pin className="w-3.5 h-3.5" />
-                  </button>
-                  <AlertDialog
-                    open={confirmDeleteId === chat.id}
-                    onOpenChange={(open) => setConfirmDeleteId(open ? chat.id : null)}
-                  >
+                  <div className="hidden group-hover:flex items-center gap-1">
                     <button
-                      onClick={(e) => { e.stopPropagation(); requestDeleteChat(chat.id); }}
-                      className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive"
-                      title="Delete analysis"
-                      aria-label="Delete analysis"
+                      onClick={(e) => { e.stopPropagation(); handleTogglePin(chat.id); }}
+                      className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground"
+                      title={chat.pinned ? "Unpin analysis" : "Pin analysis"}
+                      aria-label={chat.pinned ? "Unpin analysis" : "Pin analysis"}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Pin className="w-3.5 h-3.5" />
                     </button>
-                    <AlertDialogContent onClick={(event) => event.stopPropagation()}>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete this analysis?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete "{chat.title}" and all of its messages. This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel onClick={(event) => event.stopPropagation()}>
-                          Cancel
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            confirmDeleteChat(chat.id);
-                          }}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    <AlertDialog
+                      open={confirmDeleteId === chat.id}
+                      onOpenChange={(open) => setConfirmDeleteId(open ? chat.id : null)}
+                    >
+                      <button
+                        onClick={(e) => { e.stopPropagation(); requestDeleteChat(chat.id); }}
+                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive"
+                        title="Delete analysis"
+                        aria-label="Delete analysis"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <AlertDialogContent onClick={(event) => event.stopPropagation()}>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete this analysis?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete "{chat.title}" and all of its messages. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel onClick={(event) => event.stopPropagation()}>
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              confirmDeleteChat(chat.id);
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+            </div>
           ))}
         </div>
       </div>

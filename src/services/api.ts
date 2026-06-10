@@ -267,6 +267,27 @@ export const analysisService = {
 
     return await response.json();
   },
+
+  async renameChatSession(chatSessionId: number, sessionName: string) {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/analysis/rename`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ chatSessionId, sessionName }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to rename chat session');
+    }
+
+    return await response.json();
+  },
   async getChatMessages(chatSessionId: number) {
     const token = authService.getToken();
     if (!token) throw new Error('No token found');

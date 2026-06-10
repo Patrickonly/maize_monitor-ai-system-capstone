@@ -41,6 +41,7 @@ interface ChatContextType {
   setChatBackendId: (chatId: string, backendId: number) => void;
   loadChatMessages: (chatId: string) => Promise<void>;
   refreshChats: () => Promise<void>;
+  renameChat: (chatId: string, newTitle: string) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType>({} as ChatContextType);
@@ -290,8 +291,28 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const renameChat = async (chatId: string, newTitle: string) => {
+    const target = chats.find((c) => c.id === chatId);
+    if (!target) return;
+
+    // Optimistic update
+    setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, title: newTitle } : c)));
+    setActiveChat((current) => (current?.id === chatId ? { ...current, title: newTitle } : current));
+
+    if (target.backendId) {
+      try {
+        await analysisService.renameChatSession(target.backendId, newTitle);
+      } catch (error) {
+        console.error("Failed to rename chat on backend:", error);
+        // Revert on failure
+        setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, title: target.title } : c)));
+        setActiveChat((current) => (current?.id === chatId ? { ...current, title: target.title } : current));
+      }
+    }
+  };
+
   return (
-    <ChatContext.Provider value={{ chats, activeChat, isGuest, setActiveChat, createChat, addMessage, removeMessage, updateMessage, togglePin, deleteChat, setIsGuest, setChatBackendId, loadChatMessages, refreshChats }}>
+    <ChatContext.Provider value={{ chats, activeChat, isGuest, setActiveChat, createChat, addMessage, removeMessage, updateMessage, togglePin, deleteChat, setIsGuest, setChatBackendId, loadChatMessages, refreshChats, renameChat }}>
       {children}
     </ChatContext.Provider>
   );
