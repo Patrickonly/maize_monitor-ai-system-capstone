@@ -34,7 +34,7 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      const loggedInUser = await login(email, password);
       setIsGuest(false);
       toast({
         title: "Success",
@@ -42,7 +42,12 @@ export const LoginModal = ({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
         variant: "default",
       });
       onClose();
-      navigate("/dashboard");
+      
+      if (loggedInUser.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       toast({
         title: "Login Failed",

@@ -15,7 +15,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   signup: (email: string, phone: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   updateProfile: (name: string, email: string) => void;
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
     try {
@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(response.user);
       setIsLoggedIn(true);
       setIsGuest(false);
+      return response.user;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Login failed";
       setError(errorMessage);

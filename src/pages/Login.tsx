@@ -26,13 +26,18 @@ const Login = () => {
     }
 
     try {
-      await login(email, password);
+      const loggedInUser = await login(email, password);
       setIsGuest(false);
       toast({
         title: "Success",
         description: "Login successful! Welcome back.",
       });
-      navigate("/dashboard");
+      
+      if (loggedInUser.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       toast({
         title: "Login Failed",
