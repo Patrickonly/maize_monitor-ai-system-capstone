@@ -150,6 +150,30 @@ export const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Admin Navigation */}
+        {user?.role === "admin" && (
+          <>
+            <div className="my-3 border-t border-sidebar-border/50 mx-3"></div>
+            <Link
+              to="/admin"
+              onClick={handleNavLinkClick}
+              title="Admin Panel"
+              aria-label="Admin Panel"
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors mt-2",
+                location.pathname.startsWith("/admin")
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+              )}
+            >
+              <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center rounded bg-primary/20 text-primary">
+                <span className="font-bold text-xs">A</span>
+              </div>
+              {!collapsed && <span className="text-primary font-semibold">Admin Panel</span>}
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Chat Lists */}
@@ -206,7 +230,12 @@ export const Sidebar = () => {
             {!collapsed && (
               <>
                 <p className="text-xs text-muted-foreground px-2">Logged in as</p>
-                <p className="text-sm font-medium px-2 truncate">{user?.name}</p>
+                <div className="flex flex-col px-2 mb-1">
+                  <p className="text-sm font-medium truncate">{user?.name}</p>
+                  <p className="text-[10px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+                    {user?.role === "admin" ? "Admin" : "User"}
+                  </p>
+                </div>
               </>
             )}
             <button

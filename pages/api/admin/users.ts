@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { extractToken, verifyToken } from '../../../utils/auth';
 import { applyCors, handleOptions } from '../../../utils/cors';
 import {
     activateUser,
@@ -12,6 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   applyCors(req, res);
 
   try {
+    let adminId = -1;
+
     // Verify admin access
     if (req.method !== 'OPTIONS') {
       const authHeader = req.headers.authorization;
@@ -19,16 +22,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ error: 'Unauthorized: Missing authorization header' });
       }
 
-      // For now, we'll check admin status from JWT in headers
-      // In a real app, this would be done via middleware
+      const token = extractToken(authHeader);
+      if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token format' });
+      }
+
+      const decoded = verifyToken(token);
+      if (!decoded || !decoded.id) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+      }
+
+      adminId = decoded.id;
     }
 
     // GET: Fetch all users (admin only)
     if (req.method === 'GET') {
       try {
-        // For demo purposes, we'll accept any authenticated request
-        // In production, use requireAdmin middleware
-        const users = await getAllUsers(1); // Using admin user ID 1 for now
+        const users = await getAllUsers(adminId);
         return res.status(200).json({
           success: true,
           data: users
@@ -43,8 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { action, targetUserId, newRole } = req.body;
 
       try {
-        const adminId = 1; // This should come from JWT token in production
-
         switch (action) {
           case 'update-role':
             if (!targetUserId || !newRole) {

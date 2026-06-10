@@ -10,6 +10,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUserChats from "./pages/AdminUserChats";
 import CreateAnalysing from "./pages/CreateAnalysing";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
@@ -53,6 +55,8 @@ const App = () => (
                   <Route path="/" element={<RouteLoader><Landing /></RouteLoader>} />
                   <Route path="/create-analysing" element={<CreateAnalysing />} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin/users/:userId/chats" element={<ProtectedRoute><AdminUserChats /></ProtectedRoute>} />
                   <Route path="/recent" element={<RecentChats />} />
                   <Route path="/reports" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/settings" element={<SettingsPage />} />

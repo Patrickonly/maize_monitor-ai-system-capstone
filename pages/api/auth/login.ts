@@ -14,6 +14,7 @@ interface SuccessResponse {
     id: number;
     email: string;
     name: string;
+    role?: string;
   };
   token: string;
   message: string;
@@ -51,7 +52,7 @@ export default async function handler(
     try {
       // Get user with role
       const [users] = await connection.execute(
-        'SELECT u.id, u.email, u.name, u.password_hash, u.is_active, u.role_id FROM users u WHERE u.email = ?',
+        'SELECT u.id, u.email, u.name, u.password_hash, u.is_active, u.role_id, r.name AS role FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.email = ?',
         [email]
       );
 
@@ -83,6 +84,7 @@ export default async function handler(
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         },
         token,
         message: 'Login successful',

@@ -682,3 +682,87 @@ export const maizeApiService = {
     return data as MaizeChatResponse;
   },
 };
+
+export const adminService = {
+  async getUsers() {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/admin/users`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to fetch users');
+    }
+
+    return await response.json();
+  },
+
+  async updateUserRole(targetUserId: number, newRole: 'admin' | 'user') {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'update-role', targetUserId, newRole }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to update user role');
+    }
+
+    return await response.json();
+  },
+
+  async deactivateUser(targetUserId: number) {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'deactivate', targetUserId }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to deactivate user');
+    }
+
+    return await response.json();
+  },
+
+  async getUserSessions(targetUserId: number) {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/admin/users/${targetUserId}/sessions`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to fetch user sessions');
+    }
+
+    return await response.json();
+  }
+};
