@@ -764,5 +764,25 @@ export const adminService = {
     }
 
     return await response.json();
+  },
+
+  async getSystemMonitorStats() {
+    const token = authService.getToken();
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_URL}/api/admin/monitor`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || error.error || 'Failed to fetch system monitor stats');
+    }
+
+    return await response.json();
   }
 };

@@ -28,10 +28,15 @@ import {
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const navItems = [
+const userNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: History, label: "Recent Analyses", path: "/recent" },
   { icon: Settings, label: "Settings", path: "/settings" },
+];
+
+const adminNavItems = [
+  { icon: LayoutDashboard, label: "System Monitor", path: "/admin" },
+  { icon: Settings, label: "System Settings", path: "/admin/settings" },
 ];
 
 export const Sidebar = () => {
@@ -112,25 +117,27 @@ export const Sidebar = () => {
       </div>
 
       {/* New Chat */}
-      <div className="p-3">
-        <button
-          onClick={handleCreateAnalysis}
-          title="New Analysis"
-          aria-label="New Analysis"
-          className={cn(
-            "w-full flex items-center gap-2 rounded-xl border border-dashed border-primary/40 text-primary hover:bg-accent transition-colors",
-            collapsed ? "justify-center p-2" : "px-4 py-2.5"
-          )}
-        >
-          <Plus className="w-4 h-4" />
-          {!collapsed && <span className="text-sm font-medium">New Analysis</span>}
-        </button>
-      </div>
+      {user?.role !== "admin" && (
+        <div className="p-3">
+          <button
+            onClick={handleCreateAnalysis}
+            title="New Analysis"
+            aria-label="New Analysis"
+            className={cn(
+              "w-full flex items-center gap-2 rounded-xl border border-dashed border-primary/40 text-primary hover:bg-accent transition-colors",
+              collapsed ? "justify-center p-2" : "px-4 py-2.5"
+            )}
+          >
+            <Plus className="w-4 h-4" />
+            {!collapsed && <span className="text-sm font-medium">New Analysis</span>}
+          </button>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="px-3 space-y-1">
-        {navItems.map((item) => {
-          const active = location.pathname === item.path;
+        {(user?.role === "admin" ? adminNavItems : userNavItems).map((item) => {
+          const active = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
           return (
             <Link
               key={item.path}
@@ -141,43 +148,42 @@ export const Sidebar = () => {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-              )}
-            >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
-          );
-        })}
-
-        {/* Admin Navigation */}
-        {user?.role === "admin" && (
-          <>
-            <div className="my-3 border-t border-sidebar-border/50 mx-3"></div>
-            <Link
-              to="/admin"
-              onClick={handleNavLinkClick}
-              title="Admin Panel"
-              aria-label="Admin Panel"
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors mt-2",
-                location.pathname.startsWith("/admin")
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50"
               )}
             >
-              <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center rounded bg-primary/20 text-primary">
-                <span className="font-bold text-xs">A</span>
+              <div className={cn("w-5 h-5 flex-shrink-0 flex items-center justify-center rounded", active ? "bg-primary/20 text-primary" : "")}>
+                <item.icon className="w-4 h-4" />
               </div>
-              {!collapsed && <span className="text-primary font-semibold">Admin Panel</span>}
+              {!collapsed && <span>{item.label}</span>}
             </Link>
-          </>
+          );
+        })}
+        
+        {/* User Management for Admins */}
+        {user?.role === "admin" && (
+          <Link
+            to="/admin/users"
+            onClick={handleNavLinkClick}
+            title="User Management"
+            aria-label="User Management"
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors mt-2",
+              location.pathname.startsWith("/admin/users")
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+            )}
+          >
+            <div className={cn("w-5 h-5 flex-shrink-0 flex items-center justify-center rounded", location.pathname.startsWith("/admin/users") ? "bg-primary/20 text-primary" : "")}>
+              <span className="font-bold text-xs">U</span>
+            </div>
+            {!collapsed && <span>User Management</span>}
+          </Link>
         )}
       </nav>
 
       {/* Chat Lists */}
-      {!collapsed && (
+      {!collapsed && user?.role !== "admin" && (
         <div className="flex-1 overflow-y-auto px-3 mt-4 space-y-4">
           {pinnedChats.length > 0 && (
             <div>
@@ -199,6 +205,9 @@ export const Sidebar = () => {
           )}
         </div>
       )}
+
+      {/* Spacer for admin since they don't have chat lists */}
+      {user?.role === "admin" && <div className="flex-1"></div>}
 
       {/* Auth Section */}
       <div className="border-t border-sidebar-border p-3 mt-auto">

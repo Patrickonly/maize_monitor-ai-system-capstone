@@ -25,7 +25,7 @@ interface AdminUser {
   created_at: string;
 }
 
-const AdminDashboard = () => {
+const AdminUsers = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -248,4 +248,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminUsers;
