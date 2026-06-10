@@ -11,7 +11,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AdminMonitor from "./pages/AdminMonitor";
-import AdminSettings from "./pages/AdminSettings";
 import AdminUserChats from "./pages/AdminUserChats";
 import AdminUsers from "./pages/AdminUsers";
 import CreateAnalysing from "./pages/CreateAnalysing";
@@ -61,7 +60,6 @@ const App = () => (
                   {/* Admin Routes */}
                   <Route path="/admin" element={<ProtectedRoute><AdminMonitor /></ProtectedRoute>} />
                   <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
-                  <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
                   <Route path="/admin/users/:userId/chats" element={<ProtectedRoute><AdminUserChats /></ProtectedRoute>} />
                   
                   <Route path="/recent" element={<RecentChats />} />

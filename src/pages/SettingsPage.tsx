@@ -27,18 +27,22 @@ const SettingsPage = () => {
     setProfileEmail(user?.email || "");
   }, [user]);
 
-  const handleProfileSave = () => {
+  const handleProfileSave = async () => {
     if (!profileName.trim() || !profileEmail.trim()) {
       setProfileMessage({ type: "error", text: "Please fill in all fields" });
       return;
     }
-    updateProfile(profileName, profileEmail);
-    setProfileMessage({ type: "success", text: "Profile updated successfully!" });
-    setEditingProfile(false);
+    try {
+      await updateProfile(profileName, profileEmail);
+      setProfileMessage({ type: "success", text: "Profile updated successfully!" });
+      setEditingProfile(false);
+    } catch (err: any) {
+      setProfileMessage({ type: "error", text: err.message || "Failed to update profile" });
+    }
     setTimeout(() => setProfileMessage(null), 3000);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
       setPasswordMessage({ type: "error", text: "Please fill in all password fields" });
       return;
@@ -51,17 +55,17 @@ const SettingsPage = () => {
       setPasswordMessage({ type: "error", text: "Password must be at least 6 characters" });
       return;
     }
-    const success = changePassword(oldPassword, newPassword);
-    if (success) {
+    try {
+      await changePassword(oldPassword, newPassword);
       setPasswordMessage({ type: "success", text: "Password changed successfully!" });
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setChangingPassword(false);
-      setTimeout(() => setPasswordMessage(null), 3000);
-    } else {
-      setPasswordMessage({ type: "error", text: "Invalid old password" });
+    } catch (err: any) {
+      setPasswordMessage({ type: "error", text: err.message || "Invalid current password or server error" });
     }
+    setTimeout(() => setPasswordMessage(null), 3000);
   };
 
   return (

@@ -18,8 +18,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<User>;
   signup: (email: string, phone: string, password: string, name: string) => Promise<void>;
   logout: () => void;
-  updateProfile: (name: string, email: string) => void;
-  changePassword: (oldPassword: string, newPassword: string) => boolean;
+  updateProfile: (name: string, email: string) => Promise<void>;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -87,18 +87,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
   };
 
-  const updateProfile = (name: string, email: string) => {
-    if (user) {
-      setUser({ ...user, name, email });
+  const updateProfile = async (name: string, email: string) => {
+    try {
+      const res = await authService.updateProfile(name, email);
+      if (res.user) setUser(res.user);
+    } catch (err) {
+      throw err;
     }
   };
 
-  const changePassword = (oldPassword: string, newPassword: string) => {
-    // Mock password change - replace with actual API call
-    if (oldPassword && newPassword) {
-      return true;
+  const changePassword = async (oldPassword: string, newPassword: string) => {
+    try {
+      await authService.changePassword(oldPassword, newPassword);
+    } catch (err) {
+      throw err;
     }
-    return false;
   };
 
   const clearError = () => setError(null);

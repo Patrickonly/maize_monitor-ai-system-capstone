@@ -44,41 +44,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       // Get all chat sessions with a summary (latest message, count)
-      const [rows] = await connection.execute(
-        `SELECT 
+      // 1. Fetch user details
+      const [userRows] = await connection.execute(
+        'SELECT id, name, email, is_active FROM users WHERE id = ?',
+        [targetUserId]
+      );
+      
+      const targetUser = (userRows as any[])[0];
+      if (!targetUser) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      // 2. Fetch sessions
+      const [rows] = await connection.execute(`
+        SELECT 
           cs.id,
           cs.session_name as sessionName,
           cs.created_at as createdAt,
-          COALESCE(MAX(cc.created_at), cs.created_at) as updatedAt,
+          cs.updated_at as updatedAt,
           COUNT(cc.id) as messageCount,
-          SUBSTRING_INDEX(
-            MAX(CONCAT(DATE_FORMAT(cc.created_at, '%Y-%m-%d %H:%i:%s'), '||', cc.content)),
-            '||',
-            -1
+          (
+            SELECT content 
+            FROM chat_conversation 
+            WHERE chat_session_id = cs.id AND role = 'assistant' 
+            ORDER BY created_at DESC 
+            LIMIT 1
           ) as lastMessage
         FROM chat_sessions cs
         LEFT JOIN chat_conversation cc ON cs.id = cc.chat_session_id
         WHERE cs.user_id = ?
-        GROUP BY cs.id, cs.session_name, cs.created_at
-        ORDER BY updatedAt DESC`,
-        [Number(targetUserId)]
-      );
-
-      const sessions = (rows as any[]).map((row) => ({
-        ...row,
-        messageCount: Number(row.messageCount || 0),
-      }));
+        GROUP BY cs.id, cs.session_name, cs.created_at, cs.updated_at
+        ORDER BY cs.updated_at DESC
+      `, [targetUserId]);
 
       return res.status(200).json({
         success: true,
-        sessions,
-        message: 'User sessions retrieved successfully'
+        user: targetUser,
+        sessions: rows,
+        message: 'Sessions retrieved successfully'
       });
     } finally {
       connection.release();
     }
   } catch (error: any) {
-    console.error('Admin user sessions API Error:', error);
+    console.error('Admin Fetch User Sessions Error:', error);
     res.status(500).json({ success: false, message: 'Internal server error', details: error.message });
   }
 }

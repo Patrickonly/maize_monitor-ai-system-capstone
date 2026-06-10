@@ -89,6 +89,52 @@ export const authService = {
     localStorage.removeItem('user');
   },
 
+  async updateProfile(name: string, email: string) {
+    const token = this.getToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const response = await fetch(`${API_URL}/api/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ name, email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update profile');
+    }
+
+    const data = await response.json();
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    return data;
+  },
+
+  async changePassword(oldPassword: string, newPassword: string) {
+    const token = this.getToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const response = await fetch(`${API_URL}/api/auth/password`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to change password');
+    }
+
+    return await response.json();
+  },
+
   getToken(): string | null {
     return localStorage.getItem('token');
   },

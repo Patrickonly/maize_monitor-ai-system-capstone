@@ -21,6 +21,7 @@ const AdminUserChats = () => {
   const navigate = useNavigate();
   
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
+  const [targetUser, setTargetUser] = useState<{name: string, email: string} | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ const AdminUserChats = () => {
       const res = await adminService.getUserSessions(Number(userId));
       if (res.success) {
         setSessions(res.sessions || []);
+        if (res.user) setTargetUser(res.user);
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to load user chat sessions");
@@ -53,13 +55,15 @@ const AdminUserChats = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <Link to="/admin" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline mb-2">
-              <ArrowLeft className="w-4 h-4" /> Back to Admin Panel
+            <Link to="/admin/users" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline mb-2">
+              <ArrowLeft className="w-4 h-4" /> Back to User Management
             </Link>
             <h1 className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
               <MessageSquare className="w-6 h-6 text-primary" /> User Chat Sessions
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Viewing history for user ID: {userId}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Viewing history for {targetUser ? <span className="font-semibold text-foreground">{targetUser.name}</span> : `user ID: ${userId}`}
+            </p>
           </div>
           <button
             onClick={fetchSessions}

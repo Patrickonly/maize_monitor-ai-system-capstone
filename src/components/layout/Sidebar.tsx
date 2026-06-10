@@ -36,7 +36,7 @@ const userNavItems = [
 
 const adminNavItems = [
   { icon: LayoutDashboard, label: "System Monitor", path: "/admin" },
-  { icon: Settings, label: "System Settings", path: "/admin/settings" },
+  { icon: Settings, label: "System Settings", path: "/settings" },
 ];
 
 export const Sidebar = () => {
