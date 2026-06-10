@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { pool } from '../../../../database/connection';
-import { extractToken, verifyToken } from '../../../../utils/auth';
-import { applyCors, handleOptions } from '../../../../utils/cors';
-import { isAdmin } from '../../../../utils/user-management';
+import { pool } from '../../../../../database/connection';
+import { extractToken, verifyToken } from '../../../../../utils/auth';
+import { applyCors, handleOptions } from '../../../../../utils/cors';
+import { isAdmin } from '../../../../../utils/user-management';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (handleOptions(req, res)) return;
