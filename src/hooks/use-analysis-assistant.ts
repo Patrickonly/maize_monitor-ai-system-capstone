@@ -6,7 +6,7 @@ const defaultFallbackResponse =
   "I am the Maize AI Assistant! I can help you with questions about maize diseases and treatments. Please feel free to ask or upload an image for diagnosis.";
 
 const invalidMaizeImageMessage =
-  "This is not a maize image. Use maize image only.";
+  "This is not a maize image or image is not clear. Double check and upload again.";
 
 const extractBase64Data = (value?: string) => {
   if (!value) return undefined;
