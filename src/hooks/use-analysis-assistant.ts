@@ -2,6 +2,8 @@ import { useChat } from "@/contexts/ChatContext";
 import { analysisService, authService, maizeApiService, MaizePredictResponse } from "@/services/api";
 import { useEffect, useRef, useState } from "react";
 
+import Swal from "sweetalert2";
+
 const defaultFallbackResponse =
   "I am the Maize AI Assistant! I can help you with questions about maize diseases and treatments. Please feel free to ask or upload an image for diagnosis.";
 
@@ -121,6 +123,17 @@ export const useAnalysisAssistant = () => {
           // If we created the user message for this submission, remove it on invalid image
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
           assistantContent = invalidMaizeImageMessage;
+          
+          Swal.fire({
+            title: "Invalid Image",
+            text: invalidMaizeImageMessage,
+            icon: "error",
+            imageUrl: image,
+            imageHeight: 250,
+            imageAlt: "Uploaded image",
+            showCloseButton: true,
+            confirmButtonText: "OK",
+          });
         } else {
           assistantContent = formatPredictResponse(prediction);
           
@@ -169,6 +182,17 @@ export const useAnalysisAssistant = () => {
         if (image) {
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
           assistantContent = invalidMaizeImageMessage;
+          
+          Swal.fire({
+            title: "Invalid Image",
+            text: invalidMaizeImageMessage,
+            icon: "error",
+            imageUrl: image,
+            imageHeight: 250,
+            imageAlt: "Uploaded image",
+            showCloseButton: true,
+            confirmButtonText: "OK",
+          });
         }
 
         if (!image && trimmedText) {
