@@ -121,9 +121,10 @@ export const useAnalysisAssistant = () => {
         if (image && prediction.type === "image" && prediction.valid_image === false) {
           // If we created the user message for this submission, remove it on invalid image
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
-          assistantContent = invalidMaizeImageMessage;
           
           setInvalidImageError({ image, message: invalidMaizeImageMessage });
+          setIsAnalyzing(false);
+          return;
         } else {
           assistantContent = formatPredictResponse(prediction);
           
@@ -171,9 +172,10 @@ export const useAnalysisAssistant = () => {
 
         if (image) {
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
-          assistantContent = invalidMaizeImageMessage;
           
           setInvalidImageError({ image, message: invalidMaizeImageMessage });
+          setIsAnalyzing(false);
+          return;
         }
 
         if (!image && trimmedText) {
