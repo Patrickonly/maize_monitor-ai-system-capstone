@@ -4,8 +4,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useChat } from "@/contexts/ChatContext";
 import { useAnalysisAssistant } from "@/hooks/use-analysis-assistant";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { LogOut, Wheat } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { LogOut, Wheat, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,7 +32,7 @@ const TypingDots = () => (
 const CreateAnalysing = () => {
   const navigate = useNavigate();
   const { activeChat, removeMessage, updateMessage } = useChat();
-  const { isAnalyzing, submitAnalysis } = useAnalysisAssistant();
+  const { isAnalyzing, submitAnalysis, invalidImageError, setInvalidImageError } = useAnalysisAssistant();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -158,6 +158,51 @@ const CreateAnalysing = () => {
           />
         </div>
       </div>
+
+      {/* Invalid Image Custom Popup */}
+      <AnimatePresence>
+        {invalidImageError && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              className="w-full max-w-md overflow-hidden rounded-2xl border-2 border-red-500/50 bg-card shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)]"
+            >
+              <div className="flex items-center justify-between border-b border-red-500/20 bg-red-500/10 px-6 py-4">
+                <h3 className="font-semibold text-red-500 flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500/20 text-xs font-bold">!</span>
+                  Invalid Image
+                </h3>
+                <button 
+                  onClick={() => setInvalidImageError(null)}
+                  className="rounded-full p-1.5 text-red-500/80 hover:bg-red-500/20 hover:text-red-500 transition-colors"
+                  title="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4 text-center">
+                <img src={invalidImageError.image} alt="Uploaded" className="mx-auto max-h-48 rounded-xl object-cover border border-red-500/20 shadow-md" />
+                <p className="text-sm font-medium text-foreground">{invalidImageError.message}</p>
+              </div>
+              <div className="border-t border-red-500/10 bg-red-500/5 px-6 py-4 flex justify-center">
+                <button 
+                  onClick={() => setInvalidImageError(null)}
+                  className="w-full rounded-xl bg-red-500 hover:bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors shadow-lg shadow-red-500/20"
+                >
+                  Double Check & Upload Again
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 };

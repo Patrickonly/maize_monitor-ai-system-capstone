@@ -2,8 +2,6 @@ import { useChat } from "@/contexts/ChatContext";
 import { analysisService, authService, maizeApiService, MaizePredictResponse } from "@/services/api";
 import { useEffect, useRef, useState } from "react";
 
-import Swal from "sweetalert2";
-
 const defaultFallbackResponse =
   "I am the Maize AI Assistant! I can help you with questions about maize diseases and treatments. Please feel free to ask or upload an image for diagnosis.";
 
@@ -39,6 +37,7 @@ interface SubmitOptions {
 export const useAnalysisAssistant = () => {
   const { activeChat, createChat, addMessage, removeMessage, updateMessage, setChatBackendId } = useChat();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [invalidImageError, setInvalidImageError] = useState<{ image: string, message: string } | null>(null);
   const timerRef = useRef<number | null>(null);
   const backendSessionByChatRef = useRef<Record<string, number>>({});
 
@@ -124,16 +123,7 @@ export const useAnalysisAssistant = () => {
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
           assistantContent = invalidMaizeImageMessage;
           
-          Swal.fire({
-            title: "Invalid Image",
-            text: invalidMaizeImageMessage,
-            icon: "error",
-            imageUrl: image,
-            imageHeight: 250,
-            imageAlt: "Uploaded image",
-            showCloseButton: true,
-            confirmButtonText: "OK",
-          });
+          setInvalidImageError({ image, message: invalidMaizeImageMessage });
         } else {
           assistantContent = formatPredictResponse(prediction);
           
@@ -183,16 +173,7 @@ export const useAnalysisAssistant = () => {
           if (!existingId && userMessageId) removeMessage(chat.id, userMessageId);
           assistantContent = invalidMaizeImageMessage;
           
-          Swal.fire({
-            title: "Invalid Image",
-            text: invalidMaizeImageMessage,
-            icon: "error",
-            imageUrl: image,
-            imageHeight: 250,
-            imageAlt: "Uploaded image",
-            showCloseButton: true,
-            confirmButtonText: "OK",
-          });
+          setInvalidImageError({ image, message: invalidMaizeImageMessage });
         }
 
         if (!image && trimmedText) {
@@ -250,5 +231,7 @@ export const useAnalysisAssistant = () => {
   return {
     isAnalyzing,
     submitAnalysis,
+    invalidImageError,
+    setInvalidImageError,
   };
 };
